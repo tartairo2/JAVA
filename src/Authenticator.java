@@ -1,3 +1,5 @@
+import org.mindrot.jbcrypt.BCrypt;
+
 import java.sql.*;
 
 public class Authenticator {
@@ -30,12 +32,11 @@ public class Authenticator {
 
     public static boolean authenticate(String email, String password) {
         try (Connection connection = DatabaseUtils.getConnection()) {
-            String query = "SELECT * FROM Users WHERE email = ? AND password = ?";
+            String query = "SELECT * FROM Users WHERE email = ?";
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setString(1, email);
-                preparedStatement.setString(2, hashPassword(password));
                 ResultSet resultSet = preparedStatement.executeQuery();
-                if (resultSet.next()) {
+                if (resultSet.next() && BCrypt.checkpw(password, resultSet.getString("password"))) {
                     System.out.println("Connexion réussie. Role: " + resultSet.getString("role"));
                     return true;
                 } else {
@@ -78,7 +79,7 @@ public class Authenticator {
     }
 
     private static String hashPassword(String password) {
-        // Implement password hashing logic (e.g., using BCrypt)
-        return password;
+        // Utilisation de BCrypt pour hacher le mot de passe
+        return BCrypt.hashpw(password, BCrypt.gensalt());
     }
 }

@@ -47,7 +47,11 @@ public class Main {
             if (Authenticator.createUser(email, password)) {
                 break; // Sortir de la boucle si le compte est créé avec succès
             } else {
-                System.out.println("Veuillez réessayer.");
+                System.out.println("Veuillez réessayer ou tapez 'retour' pour revenir au menu principal.");
+                String input = scanner.nextLine().trim();
+                if (input.equalsIgnoreCase("retour")) {
+                    break;
+                }
             }
         }
     }
@@ -64,9 +68,12 @@ public class Main {
             if (Authenticator.authenticate(loginEmail, loginPassword)) {
                 break; // Sortir de la boucle si la connexion réussit
             } else {
-                System.out.println("Veuillez réessayer.");
+                System.out.println("Veuillez réessayer ou tapez 'retour' pour revenir au menu principal.");
+                String input = scanner.nextLine().trim();
+                if (input.equalsIgnoreCase("retour")) {
+                    break;
+                }
             }
         }
     }
-
 }
