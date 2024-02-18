@@ -1,3 +1,5 @@
+import org.mindrot.jbcrypt.BCrypt;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -47,7 +49,7 @@ public class ApplicationPrincipale {
         String password = scanner.nextLine();
 
         try (Connection connection = ConnexionMySQL.obtenirConnexion()) {
-            if (verifierUtilisateur(connection, username, password)) {
+            if (verifierMotDePasse(connection, username, password)) {
                 System.out.println("Connexion réussie !");
                 return true;
             } else {
@@ -82,14 +84,17 @@ public class ApplicationPrincipale {
         }
     }
 
-    private static boolean verifierUtilisateur(Connection connection, String username, String password) throws SQLException {
-        String query = "SELECT * FROM users WHERE nom_utilisateur = ? AND mot_de_passe = ?";
+    private static boolean verifierMotDePasse(Connection connection, String username, String password) throws SQLException {
+        String query = "SELECT mot_de_passe FROM users WHERE nom_utilisateur = ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
             preparedStatement.setString(1, username);
-            preparedStatement.setString(2, password);
 
             ResultSet resultSet = preparedStatement.executeQuery();
-            return resultSet.next();
+            if (resultSet.next()) {
+                String motDePasseCrypte = resultSet.getString("mot_de_passe");
+                return BCrypt.checkpw(password, motDePasseCrypte);
+            }
+            return false;
         }
     }
 
@@ -109,10 +114,13 @@ public class ApplicationPrincipale {
             return false;
         }
 
+        // Crypter le mot de passe avec BCrypt
+        String motDePasseCrypte = BCrypt.hashpw(password, BCrypt.gensalt());
+
         String insertQuery = "INSERT INTO users (nom_utilisateur, mot_de_passe) VALUES (?, ?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {
             preparedStatement.setString(1, username);
-            preparedStatement.setString(2, password);
+            preparedStatement.setString(2, motDePasseCrypte);
 
             int rowsAffected = preparedStatement.executeUpdate();
             return rowsAffected > 0;
