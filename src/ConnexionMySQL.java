@@ -10,13 +10,10 @@ public class ConnexionMySQL {
 
     public static Connection obtenirConnexion() throws SQLException {
         try {
-            // Charger le driver JDBC
             Class.forName("com.mysql.cj.jdbc.Driver");
-
-            // Retourner la connexion à la base de données
             return DriverManager.getConnection(URL, UTILISATEUR, MOT_DE_PASSE);
         } catch (ClassNotFoundException e) {
-            throw new SQLException("Erreur lors du chargement du driver JDBC.", e);
+            throw new SQLException("Erreur lors du chargement du driver JDBC", e);
         }
     }
 }
