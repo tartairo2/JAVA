@@ -1,8 +1,24 @@
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Scanner;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 public class ApplicationPrincipale {
+
+    public static void voirUtilisateurs(Connection connection) {
+        String query = "SELECT * FROM users";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                String username = resultSet.getString("nom_utilisateur");
+                String email = resultSet.getString("email");
+                System.out.println("Utilisateur : " + username + ", Email : " + email);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         boolean utilisateurConnecte = false;
@@ -44,6 +60,9 @@ public class ApplicationPrincipale {
                         UtilisateurService.voirUtilisateurs(connection);
                         break;
                     case 2:
+                        UtilisateurService.modifierEmail(connection, scanner);
+                        break;
+                    case 3:
                         System.out.println("Au revoir !");
                         System.exit(0);
                     default:
