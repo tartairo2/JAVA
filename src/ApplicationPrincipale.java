@@ -22,7 +22,11 @@ public class ApplicationPrincipale {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         boolean utilisateurConnecte = false;
+<<<<<<< Updated upstream
         Connection connection = null;
+=======
+        GestionUtilisateurs gestionUtilisateurs = new GestionUtilisateurs(); // Ajoutez cette ligne
+>>>>>>> Stashed changes
 
         try {
             connection = ConnexionMySQL.obtenirConnexion();
@@ -30,6 +34,7 @@ public class ApplicationPrincipale {
             while (!utilisateurConnecte) {
                 Menu.afficherMenuNonConnecte();
 
+<<<<<<< Updated upstream
                 int choix = scanner.nextInt();
                 scanner.nextLine(); // Consommer la nouvelle ligne restante après le choix numérique
 
@@ -80,5 +85,32 @@ public class ApplicationPrincipale {
                 }
             }
         }
+=======
+            try (Connection connection = ConnexionMySQL.obtenirConnexion()) {
+                switch (choix) {
+                    case 1:
+                        utilisateurConnecte = gestionUtilisateurs.seConnecter(scanner, connection); // Modifiez cette ligne
+                        break;
+                    case 2:
+                        gestionUtilisateurs.creerCompte(scanner, connection);
+                        break;
+                    case 3:
+                        System.out.println("Au revoir !");
+                        System.exit(0);
+                    default:
+                        System.out.println("Choix invalide. Veuillez sélectionner une option valide.");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static void afficherMenu() {
+        System.out.println("1. Se connecter");
+        System.out.println("2. Créer un compte");
+        System.out.println("3. Quitter");
+        System.out.println("Choisissez une option : ");
+>>>>>>> Stashed changes
     }
 }
